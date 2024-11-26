@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Spatie\Permission\Models\Role;
 
 class RegisteredUserController extends Controller
 {
@@ -32,20 +34,59 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'password' => 'required',
+            'no_wa' => 'required|string|max:20',
+            'province' => 'required',
+            'city' => 'required',
+            'district' => 'required',
+            'village' => 'required',
+            'agree' => 'required',
         ]);
 
         $user = User::create([
             'name' => $request->name,
+            'no_wa' => $request->no_wa,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'province' => $request->province,
+            'city' => $request->city,
+            'district' => $request->district,
+            'village' => $request->village,
         ]);
+
+        $role = Role::where('name', 'parent')->first();
+        $user->assignRole($role);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        return redirect(route('dashboard.index', absolute: false));
+
+        // // Generate QR code
+        // $qrCode = $this->generateQrCode($user);
+
+
+        // // Auth::login($user);
+
+        // // return redirect(RouteServiceProvider::HOME)->with('qrcode', $qrCode);
+        // return redirect()->route('coba', $user)
+        //     ->with('success', 'User created successfully')
+        //     ->with('qrCode', $qrCode);
+    }
+
+
+    private function generateQrCode(User $user)
+    {
+        $qrCode = uniqid('USER-');
+        $user->update(['qr_code' => $qrCode]);
+
+        return QrCode::size(300)->generate($qrCode);
+    }
+
+    public function show(User $user)
+    {
+        return view('coba', compact('user'));
     }
 }
