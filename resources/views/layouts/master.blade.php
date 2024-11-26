@@ -162,8 +162,8 @@
             title: "Berhasil!",
             text: "{{ session('success') }}",
             icon: "success",
-            button: "OK",
             timer: 3000,
+            button: false,
         });
     @endif
 
@@ -172,8 +172,8 @@
             title: "Gagal!",
             text: "{{ session('error') }}",
             icon: "error",
-            button: "OK",
             timer: 3000,
+            button: false,
         });
     @endif
 </script>

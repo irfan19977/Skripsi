@@ -11,12 +11,16 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $users = User::latest()->when(request()->q, function($users) {
             $users = $users->where('name', 'like', '%'. request()->q . '%');
         })->paginate(10);
 
+        if ($request->ajax()) {
+            return response()->view('users.table', compact('users'));  // Partial view untuk tabel
+        }
+        
         return view('users.index', compact('users'));
     }
 

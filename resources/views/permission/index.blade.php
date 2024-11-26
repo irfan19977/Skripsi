@@ -1,4 +1,4 @@
-@extends('layouts.master')
+{{-- @extends('layouts.master')
 
 @section('content')
   <div class="card">
@@ -67,6 +67,95 @@
       </div>
     </div>
   </div>
+@endsection --}}
+
+@extends('layouts.master')
+
+@section('content')
+  <div class="card">
+    <div class="card-header">
+      <h4>Permissions</h4>
+      <div class="card-header-action">
+        
+        <form method="GET" action="{{ route('permissions.index') }}">
+          <div class="input-group">
+            <a href="{{ route('permissions.create') }}" class="btn btn-primary" data-toggle="tooltip" style="margin-right: 10px;" title="Tambah Data"><i class="fas fa-plus"></i></a>
+            <input type="text" class="form-control" placeholder="Search" name="q">
+            <div class="input-group-btn">
+              <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped" id="sortable-table">
+          <thead>
+            <tr>
+              <th class="text-center">No.</th>
+              <th >Nama Permission</th>
+              @can('permissions.edit')
+                <th>Aksi</th>
+              @endcan
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($permissions as $permission)
+              <tr>
+                <td class="text-center">{{ ($permissions->currentPage() - 1) * $permissions->perPage() + $loop->iteration }}</td>
+                <td>{{ $permission->name }}</td>
+                @can('permissions.edit')
+                  <td>
+                    <a href="{{ route('permissions.edit', $permission->id) }}" class="btn btn-primary btn-action mr-1" data-toggle="tooltip" title="Edit">
+                      <i class="fas fa-pencil-alt"></i>
+                    </a>
+
+                    <form id="delete-form-{{ $permission->id }}" action="{{ route('permissions.destroy', $permission->id) }}" method="POST" style="display:inline;">
+                      @csrf
+                      @method('DELETE')
+                      <button type="button" class="btn btn-danger btn-action" data-toggle="tooltip" title="Delete" onclick="confirmDelete('{{ $permission->id }}')">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </form>
+                    
+                  </td>
+                @endcan
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
+    </div>
+    @if ($permissions->hasPages())
+    <div class="card-footer text-center">
+      <nav class="d-inline-block">
+        <ul class="pagination mb-0">
+            {{-- Previous Page Link --}}
+            <li class="page-item {{ $permissions->onFirstPage() ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ $permissions->previousPageUrl() }}" tabindex="-1">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+    
+            {{-- Pagination Elements --}}
+            @foreach ($permissions->getUrlRange(1, $permissions->lastPage()) as $page => $url)
+                <li class="page-item {{ $permissions->currentPage() == $page ? 'active' : '' }}">
+                    <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                </li>
+            @endforeach
+    
+            {{-- Next Page Link --}}
+            <li class="page-item {{ !$permissions->hasMorePages() ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ $permissions->nextPageUrl() }}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+    @endif
+  </div>
   
   <script>
     function confirmDelete(id) {
@@ -81,10 +170,9 @@
         dangerMode: true,
       }).then(function(isConfirm) {
         if (isConfirm) {
-          // Lakukan request AJAX untuk menghapus data
           const form = document.getElementById(`delete-form-${id}`);
           const url = form.action;
-  
+
           fetch(url, {
             method: 'POST',
             headers: {
@@ -98,7 +186,6 @@
           .then(response => response.json())
           .then(data => {
             if (data.success) {
-              // Tampilkan SweetAlert berhasil
               swal({
                 title: "Berhasil!",
                 text: "Data berhasil dihapus.",
@@ -106,11 +193,14 @@
                 timer: 3000,
                 buttons: false
               }).then(() => {
-                // Hapus baris tabel tanpa reload
-                document.querySelector(`#delete-form-${id}`).closest('tr').remove();
+                // Hapus baris tabel
+                const rowToRemove = document.querySelector(`#delete-form-${id}`).closest('tr');
+                rowToRemove.remove();
+
+                // Perbarui nomor urut
+                renumberTableRows();
               });
             } else {
-              // Tampilkan pesan gagal
               swal("Gagal", "Terjadi kesalahan saat menghapus data.", "error");
             }
           })
@@ -121,57 +211,23 @@
         }
       });
     }
-  </script>
-  
-  <script>
-    const deleteButton = document.getElementById('delete-selected');
-    const checkboxes = document.querySelectorAll('input[data-checkboxes="mygroup"]');
-    const selectAllCheckbox = document.getElementById('checkbox-all');
-  
-    // Fungsi untuk mengecek berapa banyak checkbox yang dicentang
-    function updateDeleteButtonVisibility() {
-      const selected = Array.from(checkboxes).filter(checkbox => checkbox.checked);
-      deleteButton.style.display = selected.length > 1 ? 'block' : 'none';
+
+    function renumberTableRows() {
+      const tableBody = document.querySelector('#sortable-table tbody');
+      const rows = tableBody.querySelectorAll('tr');
+      
+      const currentPage = {{ $permissions->currentPage() }};
+      const perPage = {{ $permissions->perPage() }};
+      
+      rows.forEach((row, index) => {
+        const numberCell = row.querySelector('td:first-child');
+        if (numberCell) {
+          numberCell.textContent = (currentPage - 1) * perPage + index + 1;
+        }
+      });
     }
   
-    // Event listener untuk semua checkbox
-    checkboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', updateDeleteButtonVisibility);
-    });
-  
-    // Event listener untuk "Select All"
-    selectAllCheckbox.addEventListener('change', function() {
-      checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-      });
-      updateDeleteButtonVisibility();
-    });
-  
-    // Event listener untuk tombol hapus
-    deleteButton.addEventListener('click', function() {
-      const selected = Array.from(checkboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value);
-  
-      if (selected.length > 0 && confirm('Apakah Anda yakin ingin menghapus checklist yang dipilih?')) {
-        // Kirim data ke server menggunakan AJAX atau form
-        fetch('/delete-permissions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-          },
-          body: JSON.stringify({ ids: selected }),
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            location.reload(); // Refresh halaman setelah penghapusan berhasil
-          } else {
-            alert('Terjadi kesalahan saat menghapus data.');
-          }
-        });
-      }
-    });
   </script>
+  
 @endsection
+

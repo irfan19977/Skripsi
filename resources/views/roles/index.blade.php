@@ -8,7 +8,7 @@
         
         <form method="GET" action="{{ route('roles.index') }}">
           <div class="input-group">
-            <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+            <a href="{{ route('roles.create') }}" class="btn btn-primary" data-toggle="tooltip" style="margin-right: 10px;" title="Tambah Data"><i class="fas fa-plus"></i></a>
             <input type="text" class="form-control" placeholder="Search" name="q">
             <div class="input-group-btn">
               <button class="btn btn-primary"><i class="fas fa-search"></i></button>
@@ -31,7 +31,7 @@
           <tbody>
             @foreach ($roles as $role)
               <tr>
-                <td class="text-center">{{ $loop->iteration }}</td>
+                <td class="text-center">{{ ($roles->currentPage() - 1) * $roles->perPage() + $loop->iteration }}</td>
                 <td>{{ $role->name }}</td>
                 <td>
                   @foreach ($role->getPermissionNames() as $permission) 
@@ -92,57 +92,73 @@
   
   <script>
     function confirmDelete(id) {
-      swal({
-        title: "Apakah Anda Yakin?",
-        text: "Data ini akan dihapus secara permanen!",
-        icon: "warning",
-        buttons: [
-          'Tidak',
-          'Ya, Hapus'
-        ],
-        dangerMode: true,
-      }).then(function(isConfirm) {
-        if (isConfirm) {
-          // Lakukan request AJAX untuk menghapus data
-          const form = document.getElementById(`delete-form-${id}`);
-          const url = form.action;
-  
-          fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-              _method: 'DELETE'
-            })
+    swal({
+      title: "Apakah Anda Yakin?",
+      text: "Data ini akan dihapus secara permanen!",
+      icon: "warning",
+      buttons: [
+        'Tidak',
+        'Ya, Hapus'
+      ],
+      dangerMode: true,
+    }).then(function(isConfirm) {
+      if (isConfirm) {
+        const form = document.getElementById(`delete-form-${id}`);
+        const url = form.action;
+
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({
+            _method: 'DELETE'
           })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              // Tampilkan SweetAlert berhasil
-              swal({
-                title: "Berhasil!",
-                text: "Data berhasil dihapus.",
-                icon: "success",
-                timer: 3000,
-                buttons: false
-              }).then(() => {
-                // Hapus baris tabel tanpa reload
-                document.querySelector(`#delete-form-${id}`).closest('tr').remove();
-              });
-            } else {
-              // Tampilkan pesan gagal
-              swal("Gagal", "Terjadi kesalahan saat menghapus data.", "error");
-            }
-          })
-          .catch(error => {
-            console.error("Error:", error);
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            swal({
+              title: "Berhasil!",
+              text: "Data berhasil dihapus.",
+              icon: "success",
+              timer: 3000,
+              buttons: false
+            }).then(() => {
+              // Hapus baris tabel
+              const rowToRemove = document.querySelector(`#delete-form-${id}`).closest('tr');
+              rowToRemove.remove();
+
+              // Perbarui nomor urut
+              renumberTableRows();
+            });
+          } else {
             swal("Gagal", "Terjadi kesalahan saat menghapus data.", "error");
-          });
-        }
-      });
-    }
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          swal("Gagal", "Terjadi kesalahan saat menghapus data.", "error");
+        });
+      }
+    });
+  }
+
+  function renumberTableRows() {
+    const tableBody = document.querySelector('#sortable-table tbody');
+    const rows = tableBody.querySelectorAll('tr');
+      
+    const currentPage = {{ $roles->currentPage() }};
+    const perPage = {{ $roles->perPage() }};
+      
+    rows.forEach((row, index) => {
+      const numberCell = row.querySelector('td:first-child');
+      if (numberCell) {
+          numberCell.textContent = (currentPage - 1) * perPage + index + 1;
+      }
+    });
+  }
   </script>
   
 @endsection
