@@ -3,12 +3,12 @@
 @section('content')
   <div class="card">
     <div class="card-header">
-      <h4>User</h4>
+      <h4>Mata Pelajaran</h4>
       <div class="card-header-action">
         
-        <form method="GET" action="{{ route('users.index') }}">
+        <form method="GET" action="{{ route('subjects.index') }}">
           <div class="input-group">
-            <a href="{{ route('users.create') }}" class="btn btn-primary" data-toggle="tooltip" style="margin-right: 10px;" title="Tambah Data"><i class="fas fa-plus"></i></a>
+            <a href="{{ route('subjects.create') }}" class="btn btn-primary" data-toggle="tooltip" style="margin-right: 10px;" title="Tambah Data"><i class="fas fa-plus"></i></a>
             <input type="text" class="form-control" placeholder="Search" name="q">
             <div class="input-group-btn">
               <button class="btn btn-primary"><i class="fas fa-search"></i></button>
@@ -23,38 +23,29 @@
           <thead>
             <tr>
               <th class="text-center">No.</th>
-              <th >Nama Permission</th>
-              <th>Role</th>
-              <th>QR Code</th>
-              @can('users.edit')
+              <th>Kode Mata Pelajaran</th>
+              <th>Mata Pelajaran</th>
+              @can('subjects.edit')
                 <th>Aksi</th>
               @endcan
             </tr>
           </thead>
           <tbody>
-            @foreach ($users as $user)
+            @foreach ($subjects as $subject)
               <tr>
-                <td class="text-center">{{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}</td>
-                <td>{{ $user->name }}</td>
-                <td>
-                    @if(!empty($user->getRoleNames()))
-                        @foreach($user->getRoleNames() as $role)
-                        <div class="badge badge-success mb-1 mr-1 mt-1">{{ $role }}</div>
-                        @endforeach
-                    @endif
-                </td>
-                <td> {!! $user->qr_code !!}</td>
-                @can('users.edit')
+                <td class="text-center">{{ ($subjects->currentPage() - 1) * $subjects->perPage() + $loop->iteration }}</td>
+                <td>{{ $subject->code }}</td>
+                <td>{{ $subject->name }}</td>
+                @can('subjects.edit')
                   <td>
-                    
-                    <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary btn-action mr-1" data-toggle="tooltip" title="Edit">
+                    <a href="{{ route('subjects.edit', $subject->slug) }}" class="btn btn-primary btn-action mr-1" data-toggle="tooltip" title="Edit">
                       <i class="fas fa-pencil-alt"></i>
                     </a>
 
-                    <form id="delete-form-{{ $user->id }}" action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
+                    <form id="delete-form-{{ $subject->id }}" action="{{ route('subjects.destroy', $subject->id) }}" method="POST" style="display:inline;">
                       @csrf
                       @method('DELETE')
-                      <button type="button" class="btn btn-danger btn-action" data-toggle="tooltip" title="Delete" onclick="confirmDelete('{{ $user->id }}')">
+                      <button type="button" class="btn btn-danger btn-action" data-toggle="tooltip" title="Delete" onclick="confirmDelete('{{ $subject->id }}')">
                         <i class="fas fa-trash"></i>
                       </button>
                     </form>
@@ -67,27 +58,27 @@
         </table>
       </div>
     </div>
-    @if ($users->hasPages())
+    @if ($subjects->hasPages())
     <div class="card-footer text-center">
       <nav class="d-inline-block">
         <ul class="pagination mb-0">
             {{-- Previous Page Link --}}
-            <li class="page-item {{ $users->onFirstPage() ? 'disabled' : '' }}">
-                <a class="page-link" href="{{ $users->previousPageUrl() }}" tabindex="-1">
+            <li class="page-item {{ $subjects->onFirstPage() ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ $subjects->previousPageUrl() }}" tabindex="-1">
                     <i class="fas fa-chevron-left"></i>
                 </a>
             </li>
     
             {{-- Pagination Elements --}}
-            @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
-                <li class="page-item {{ $users->currentPage() == $page ? 'active' : '' }}">
+            @foreach ($subjects->getUrlRange(1, $subjects->lastPage()) as $page => $url)
+                <li class="page-item {{ $subjects->currentPage() == $page ? 'active' : '' }}">
                     <a class="page-link" href="{{ $url }}">{{ $page }}</a>
                 </li>
             @endforeach
     
             {{-- Next Page Link --}}
-            <li class="page-item {{ !$users->hasMorePages() ? 'disabled' : '' }}">
-                <a class="page-link" href="{{ $users->nextPageUrl() }}">
+            <li class="page-item {{ !$subjects->hasMorePages() ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ $subjects->nextPageUrl() }}">
                     <i class="fas fa-chevron-right"></i>
                 </a>
             </li>
@@ -96,7 +87,7 @@
     </div>
     @endif
   </div>
-
+  
   <script>
     function confirmDelete(id) {
       swal({
@@ -156,8 +147,8 @@
       const tableBody = document.querySelector('#sortable-table tbody');
       const rows = tableBody.querySelectorAll('tr');
       
-      const currentPage = {{ $users->currentPage() }};
-      const perPage = {{ $users->perPage() }};
+      const currentPage = {{ $subjects->currentPage() }};
+      const perPage = {{ $subjects->perPage() }};
       
       rows.forEach((row, index) => {
         const numberCell = row.querySelector('td:first-child');

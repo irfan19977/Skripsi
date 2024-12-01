@@ -19,7 +19,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'no_kartu',
         'name',
+        'nisn',
         'email',
         'password',
         'qr_code',
@@ -48,4 +50,15 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function studentClasses()
+    {
+        return $this->hasMany(StudentClass::class, 'student_id');
+    }
+
+    // Hapus method classRoom atau sesuaikan
+    public function classRoom()
+    {
+        return $this->belongsToMany(ClassRoom::class, 'student_classes', 'student_id', 'class_room_id');
+    }
 }

@@ -1,6 +1,6 @@
 <aside id="sidebar-wrapper">
   <div class="sidebar-brand">
-    <a href="index.html"> <img alt="image" src="assets/img/logo.png" class="header-logo" /> <span
+    <a href="index.html"> <img alt="image" src="{{ asset('backend/assets/img/logo.png') }}" class="header-logo" /> <span
         class="logo-name">Otika</span>
     </a>
   </div>
@@ -9,34 +9,56 @@
     <li class="dropdown {{ Request::is('dashboard') ? 'active' : ''}} ">
       <a href="{{ route('dashboard.index') }}" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a>
     </li>
+    @can('students.index')    
+      <li class="dropdown {{ Request::is('student*') ? 'active' : ''}} ">
+        <a href="#" class="nav-link"><i data-feather="monitor"></i><span>Siswa</span></a>
+      </li>
+    @endcan
 
-    <li class="dropdown {{ Request::is('student') ? 'active' : ''}} ">
-      <a href="#" class="nav-link"><i data-feather="monitor"></i><span>Siswa</span></a>
-    </li>
+    @can('teachers.index')    
+      <li class="dropdown {{ Request::is('teacher*') ? 'active' : ''}} ">
+        <a href="#" class="nav-link"><i data-feather="monitor"></i><span>Guru</span></a>
+      </li>
+    @endcan
 
-    <li class="dropdown {{ Request::is('teacher') ? 'active' : ''}} ">
-      <a href="#" class="nav-link"><i data-feather="monitor"></i><span>Guru</span></a>
-    </li>
+    @can('subjects.index')    
+      <li class="dropdown {{ Request::is('subjects*') ? 'active' : ''}} ">
+        <a href="{{ route('subjects.index') }}" class="nav-link"><i data-feather="monitor"></i><span>Mata Pelajaran</span></a>
+      </li>
+    @endcan
 
-    <li class="dropdown {{ Request::is('mapel') ? 'active' : ''}} ">
-      <a href="#" class="nav-link"><i data-feather="monitor"></i><span>Mata Pelajaran</span></a>
-    </li>
+    @can('subjects.index')    
+      <li class="dropdown {{ Request::is('mapel*') ? 'active' : ''}} ">
+        <a href="#" class="nav-link"><i data-feather="monitor"></i><span>Jadwal Pelajaran</span></a>
+      </li>
+    @endcan
 
-    <li class="dropdown {{ Request::is('class') ? 'active' : ''}} ">
-      <a href="#" class="nav-link"><i data-feather="monitor"></i><span>Kelas</span></a>
-    </li>
+    @can('class.index') 
+      <li class="dropdown {{ Request::is('class*') ? 'active' : ''}} ">
+        <a href="{{ route('class.index') }}" class="nav-link"><i data-feather="monitor"></i><span>Kelas</span></a>
+      </li>
+    @endcan
     
-    <li class="menu-header">UI Elements</li>
-    <li class="dropdown {{ Request::is('permissions') ? 'active' : ''}} ">
-      <a href="{{ route('permissions.index') }}" class="nav-link"><i data-feather="monitor"></i><span>Permissions</span></a>
-    </li>
+    @if(auth()->user()->can('roles.index') || auth()->user()->can('permission.index') || auth()->user()->can('users.index'))
+      <li class="menu-header">UI Elements</li>
+    @endif
 
-    <li class="dropdown {{ Request::is('roles') ? 'active' : ''}} ">
-      <a href="{{ route('roles.index') }}" class="nav-link"><i data-feather="monitor"></i><span>Role</span></a>
-    </li>
+    @can('permissions.index')    
+      <li class="dropdown {{ Request::is('permissions*') ? 'active' : ''}} ">
+        <a href="{{ route('permissions.index') }}" class="nav-link"><i data-feather="monitor"></i><span>Permissions</span></a>
+      </li>
+    @endcan
+
+    @can('roles.index')
+      <li class="dropdown {{ Request::is('roles*') ? 'active' : ''}} ">
+        <a href="{{ route('roles.index') }}" class="nav-link"><i data-feather="monitor"></i><span>Role</span></a>
+      </li>
+    @endcan
     
-    <li class="dropdown {{ Request::is('users') ? 'active' : ''}} ">
-      <a href="{{ route('users.index') }}" class="nav-link"><i data-feather="monitor"></i><span>User</span></a>
-    </li>
+    @can('users.index')
+      <li class="dropdown {{ Request::is('users*') ? 'active' : ''}} ">
+        <a href="{{ route('users.index') }}" class="nav-link"><i data-feather="monitor"></i><span>User</span></a>
+      </li>
+    @endcan
   </ul>
 </aside>

@@ -13,6 +13,7 @@ class RoleController extends Controller
      */
     public function index()
     {
+        $this->authorize('roles.index');
         $roles = Role::latest()->when(request()->q, function($roles) {
             $roles = $roles->where('name', 'like', '%'. request()->q . '%');
         })->paginate(10);
@@ -25,6 +26,7 @@ class RoleController extends Controller
      */
     public function create()
     {
+        $this->authorize('roles.create');
         $permissions = Permission::latest()->get();
         return view('roles.create', compact('permissions'));
     }
@@ -68,6 +70,7 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
+        $this->authorize('roles.edit');
         $role = Role::findOrFail($id);
         $permissions = Permission::all();
         return view('roles.edit', compact('role', 'permissions'));

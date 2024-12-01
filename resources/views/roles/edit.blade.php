@@ -34,8 +34,7 @@
                         
                     
                     <div class="card-footer text-right">
-                        <button class="btn btn-primary mr-1" type="submit">Submit</button>
-                        <button class="btn btn-secondary" type="reset">Reset</button>
+                        <button class="btn btn-primary mr-1" type="submit">Simpan</button>
                     </div>
                 </form>
             </div>
