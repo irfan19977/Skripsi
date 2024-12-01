@@ -7,7 +7,8 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4>Tambah User</h4>
                 <!-- Tambahkan tombol tambah di kanan -->
-                <button type="button" class="btn btn-info" onclick="history.back()">Kembali</button>            </div>
+                <button type="button" class="btn btn-info" onclick="history.back()">Kembali</button>            
+            </div>
             <div class="card-body">
                 <form method="POST" action="{{ route('users.store') }}">
                     @csrf

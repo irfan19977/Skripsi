@@ -135,20 +135,20 @@ class ClassController extends Controller
     {
         // Find the class
         $class = ClassRoom::where('slug', $slug)->firstOrFail();
-
+    
         // Get students in this class
         $assignedStudents = StudentClass::where('class_room_id', $class->id)
             ->with('student')
             ->get();
-
-        // Get students not in this class
+    
+        // Get students not assigned to any class
         $availableStudents = User::role('student')
-            ->whereDoesntHave('studentClasses', function($query) use ($class) {
-                $query->where('class_room_id', $class->id);
-            })->get();
-
+            ->whereDoesntHave('studentClasses')  // Cek siswa belum masuk kelas manapun
+            ->get();
+    
         return view('class.edit-assign', compact('class', 'assignedStudents', 'availableStudents'));
     }
+ 
 
     public function updateAssign(Request $request, $slug)
     {

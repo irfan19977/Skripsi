@@ -2,8 +2,9 @@
 
 @section('content')
 <div class="card">
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h4>Edit Assign Siswa: {{ $class->name }} ({{ $class->grade }})</h4>
+        <a href="{{ route('class.index') }}" class="btn btn-secondary mt-3">Kembali</a>
     </div>
     <div class="card-body">
         <form action="{{ route('class.update-assign', $class->slug) }}" method="POST">
