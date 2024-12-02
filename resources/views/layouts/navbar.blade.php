@@ -78,7 +78,7 @@
                     class="user-img-radious-style"> <span class="d-sm-none d-lg-inline-block"></span></a>
             <div class="dropdown-menu dropdown-menu-right pullDown">
                 <div class="dropdown-title">Hello {{ Auth::user()->name }}</div>
-                <a href="profile.html" class="dropdown-item has-icon"> <i class="far
+                <a href="{{ route('profile.edit') }}" class="dropdown-item has-icon"> <i class="far
                                     fa-user"></i> Profile
                 </a> <a href="timeline.html" class="dropdown-item has-icon"> <i class="fas fa-bolt"></i>
                     Activities

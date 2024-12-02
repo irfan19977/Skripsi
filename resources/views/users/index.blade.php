@@ -23,11 +23,11 @@
           <thead>
             <tr>
               <th class="text-center">No.</th>
-              <th >Nama Permission</th>
-              <th>Role</th>
+              <th  class="text-center">Nama Permission</th>
+              <th class="text-center">Role</th>
               <th>QR Code</th>
               @can('users.edit')
-                <th>Aksi</th>
+                <th class="text-center">Aksi</th>
               @endcan
             </tr>
           </thead>
@@ -45,10 +45,13 @@
                 </td>
                 <td> {!! $user->qr_code !!}</td>
                 @can('users.edit')
-                  <td>
+                  <td class="text-center">
                     
                     <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary btn-action mr-1" data-toggle="tooltip" title="Edit">
                       <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <a href="{{ route('users.show', $user->id) }}" class="btn btn-primary btn-action mr-1" data-toggle="tooltip" title="Lihat Kartu">
+                      <i class="fas fa-eye"></i>
                     </a>
 
                     <form id="delete-form-{{ $user->id }}" action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">

@@ -28,6 +28,11 @@ class UserController extends Controller
         return view('users.index', compact('users'));
     }
 
+    public function show(User $user) {
+        $roles = Role::latest()->get();
+        return view('users.show', compact('user', 'roles'));
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -68,7 +73,7 @@ class UserController extends Controller
         $user->assignRole($request->input('role'));
         // Generate QR Code
         $qrCodeContent = "Nama: {$user->name}, NISN: {$user->nisn}, Email: {$user->email}";
-        $qrCodeImage = QrCode::size(50)
+        $qrCodeImage = QrCode::size(80)
             ->generate($qrCodeContent);
 
         // Save QR Code as HTML string or consider saving as a file
