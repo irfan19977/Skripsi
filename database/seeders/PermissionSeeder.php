@@ -48,6 +48,15 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'attendances.index']);
         Permission::create(['name' => 'attendances.create']);
         Permission::create(['name' => 'attendances.edit']);
+        
+        //Teacher
+        Permission::create(['name' => 'teachers.index']);
+        Permission::create(['name' => 'students.index']);
+
+        //Schedule
+        Permission::create(['name' => 'schedules.index']);
+        Permission::create(['name' => 'schedules.create']);
+        Permission::create(['name' => 'schedules.edit']);
 
          //assign permission to role
          $role = Role::find(1);

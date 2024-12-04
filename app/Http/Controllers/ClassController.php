@@ -133,6 +133,7 @@ class ClassController extends Controller
 
     public function editAssign($slug)
     {
+        $this->authorize('class.edit');
         // Find the class
         $class = ClassRoom::where('slug', $slug)->firstOrFail();
     

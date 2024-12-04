@@ -54,9 +54,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'no_kartu'  => 'required',
             'name'      => 'required',
-            'nisn'      => 'required',
             'email'     => 'required|email|unique:users',
             'role'      => 'required',
         ]);
@@ -176,4 +174,31 @@ class UserController extends Controller
             return response()->json(['success' => false, 'message' => 'Data gagal dihapus.']);
         }
     }
+
+    public function handleRFIDDetection(Request $request)
+    {
+        // Validasi input RFID
+        $validatedData = $request->validate([
+            'rfid_card' => 'required|string|max:50'
+        ]);
+
+        $rfidCard = $validatedData['rfid_card'];
+        
+        // Cek apakah kartu sudah terdaftar
+        $existingCard = User::where('no_kartu', $rfidCard)->first();
+        
+        if ($existingCard) {
+            return response()->json([
+                'status' => 'exists',
+                'message' => 'Kartu sudah terdaftar'
+            ], 400);
+        }
+        
+        // Kirim respon kartu baru untuk ditampilkan di modal
+        return response()->json([
+            'status' => 'new',
+            'rfid_card' => $rfidCard
+        ]);
+    }
+
 }

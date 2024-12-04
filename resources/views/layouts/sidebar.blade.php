@@ -11,7 +11,7 @@
     </li>
     @can('students.index')    
       <li class="dropdown {{ Request::is('student*') ? 'active' : ''}} ">
-        <a href="#" class="nav-link"><i data-feather="monitor"></i><span>Siswa</span></a>
+        <a href="{{ route('student.indexst') }}" class="nav-link"><i data-feather="monitor"></i><span>Siswa</span></a>
       </li>
     @endcan
 
@@ -27,9 +27,9 @@
       </li>
     @endcan
 
-    @can('subjects.index')    
-      <li class="dropdown {{ Request::is('mapel*') ? 'active' : ''}} ">
-        <a href="#" class="nav-link"><i data-feather="monitor"></i><span>Jadwal Pelajaran</span></a>
+    @can('schedules.index')    
+      <li class="dropdown {{ Request::is('schedules*') ? 'active' : ''}} ">
+        <a href="{{ route('schedules.index') }}" class="nav-link"><i data-feather="monitor"></i><span>Jadwal Pelajaran</span></a>
       </li>
     @endcan
 

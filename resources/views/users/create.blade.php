@@ -15,8 +15,8 @@
 
                     <div class="form-group">
                         <label>No. Kartu</label>
-                        <input type="text" class="form-control @error('no_kartu') is-invalid @enderror" name="no_kartu"
-                            placeholder="Masukkan No. Kartu " autofocus>
+                        <input type="text" id="no_kartu" class="form-control @error('no_kartu') is-invalid @enderror" name="no_kartu"
+                            placeholder="Masukkan No. Kartu" autofocus readonly>
                         @error('no_kartu')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -62,7 +62,7 @@
                     
                     <div class="card-footer text-right">
                         <button class="btn btn-primary mr-1" type="submit">Simpan</button>
-                        <button class="btn btn-secondary" type="reset">Reset</button>
+                        <a href="{{ route('schedules.index') }}" class="btn btn-secondary">Batal</a>
                     </div>
                 </form>
             </div>
@@ -70,4 +70,45 @@
     </div>
 </div>
 
+<!-- Modal Konfirmasi RFID Baru -->
+<div class="modal fade" id="rfidModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Kartu RFID Baru Terdeteksi</h5>
+            </div>
+            <div class="modal-body">
+                <p>Kartu RFID <strong id="detectedRfidCard"></strong> belum terdaftar.</p>
+                <p>Apakah Anda ingin mendaftarkan kartu ini?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="confirmRfid">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // WebSocket connection for real-time RFID detection
+    const socket = new WebSocket('ws://your-websocket-server');
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        
+        if (data.rfid_card) {
+            // Show the modal with detected RFID card
+            $('#detectedRfidCard').text(data.rfid_card);
+            $('#rfidModal').modal('show');
+
+            // When user confirms, set the RFID card in the input
+            $('#confirmRfid').off('click').on('click', function() {
+                $('#no_kartu').val(data.rfid_card);
+                $('#rfidModal').modal('hide');
+            });
+        }
+    };
+});
+</script>
 @endsection

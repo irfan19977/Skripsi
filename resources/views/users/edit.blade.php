@@ -55,9 +55,6 @@
                         @endforeach
                     </div>
                     
-                        
-                        
-                    
                     <div class="card-footer text-right">
                         <button class="btn btn-primary mr-1" type="submit">Simpan</button>
                     </div>
