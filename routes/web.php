@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendancesController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\DashboardController;
@@ -31,8 +32,13 @@ Route::get('/', function () {
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
-    // 
+    // Show User
     Route::get('/student', [ShowUserController::class, 'studentIndex'])->name('student.indexst');
+    Route::post('/student', [ShowUserController::class, 'printCards'])->name('student.print-cards');
+    
+    // Show Teacher
+    Route::get('/teacher', [ShowUserController::class, 'teacherIndex'])->name('teacher.indextc');
+    Route::post('/teacher', [ShowUserController::class, 'printCardsTc'])->name('teacher.print-cards-tc');
 
     // Subjects
     Route::resource('/subjects', SubjectController::class);
@@ -47,6 +53,13 @@ Route::group(['middleware' => 'auth'], function() {
     
     // Schedules
     Route::resource('/schedules', ScheduleController::class);
+    
+    // Attendances
+    Route::resource('/attendances', AttendancesController::class);
+    Route::get('/students/find-by-nisn/{nisn}', [AttendancesController::class, 'findByNisn']);
+    Route::post('/attendances/qr-scan', [AttendancesController::class, 'processScan'])
+    ->name('attendances.qr-scan');
+
 
     //  Permission
     Route::resource('/permissions', PermissionController::class);

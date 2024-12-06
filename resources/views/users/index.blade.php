@@ -43,7 +43,11 @@
                         @endforeach
                     @endif
                 </td>
-                <td> {!! $user->qr_code !!}</td>
+                <td> 
+                  <div style="width: 90px; height: 90px; display: inline-block;">
+                  {!! $user->qr_code !!}
+                  </div>
+                </td>
                 @can('users.edit')
                   <td class="text-center">
                     

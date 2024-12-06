@@ -18,9 +18,8 @@
   <!-- Custom style CSS -->
   <link rel="stylesheet" href="{{ asset('backend/assets/css/custom.css') }}">
   <link rel='shortcut icon' type='image/x-icon' href='{{ asset('backend/assets/img/favicon.ico') }}' />
-  <!-- DataTables -->
-  <link rel="stylesheet" href="{{ asset('backend/assets/bundles/datatables/datatables.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('backend/assets/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css') }}">
+  
+  <link rel="stylesheet" href="{{ asset('backend/assets/bundles/select2/dist/css/select2.min.css') }}">
 
 </head>
 
@@ -151,13 +150,39 @@
   <script src="{{ asset('backend/assets/js/scripts.js') }}"></script>
   <!-- Custom JS File -->
   <script src="{{ asset('backend/assets/js/custom.js') }}"></script>
-  <!-- dataTables -->
-  <script src="{{ asset('backend/assets/bundles/datatables/datatables.min.js') }}"></script>
-  <script src="{{ asset('backend/assets/bundles/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js') }}"></script>
-  <script src="{{ asset('backend/assets/bundles/jquery-ui/jquery-ui.min.js') }}"></script>
   <!-- Page Specific JS File -->
-  <script src="{{ asset('backend/assets/js/page/datatables.js') }}"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="{{ asset('backend/assets/bundles/select2/dist/js/select2.full.min.js') }}"></script>
+  <script>
+    const video = document.getElementById('video');
+
+    // Fungsi untuk memulai kamera
+    function startCamera() {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch(err => {
+                console.error("Error accessing the camera: ", err);
+            });
+    }
+
+    // Event listener untuk membuka modal
+    $('#qrScanModal').on('show.bs.modal', function () {
+        startCamera();
+    });
+
+    // Event listener untuk menutup modal
+    $('#qrScanModal').on('hidden.bs.modal', function () {
+        const stream = video.srcObject;
+        if (stream) {
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+        }
+        video.srcObject = null;
+    });
+</script>
   
   <script>
     @if (session('success'))

@@ -16,7 +16,7 @@
                     <div class="form-group">
                         <label>No. Kartu</label>
                         <input type="text" id="no_kartu" class="form-control @error('no_kartu') is-invalid @enderror" name="no_kartu"
-                            placeholder="Masukkan No. Kartu" autofocus readonly>
+                            placeholder="Masukkan No. Kartu" autofocus >
                         @error('no_kartu')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

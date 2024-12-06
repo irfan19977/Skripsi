@@ -17,7 +17,13 @@
 
     @can('teachers.index')    
       <li class="dropdown {{ Request::is('teacher*') ? 'active' : ''}} ">
-        <a href="#" class="nav-link"><i data-feather="monitor"></i><span>Guru</span></a>
+        <a href="{{ route('teacher.indextc') }}" class="nav-link"><i data-feather="monitor"></i><span>Guru</span></a>
+      </li>
+    @endcan
+    
+    @can('teachers.index')    
+      <li class="dropdown {{ Request::is('teacher*') ? 'active' : ''}} ">
+        <a href="{{ route('attendances.index') }}" class="nav-link"><i data-feather="monitor"></i><span>Guru</span></a>
       </li>
     @endcan
 

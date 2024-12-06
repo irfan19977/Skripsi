@@ -3,9 +3,9 @@
 @section('content')
   <div class="card">
     <div class="card-header">
-      <h4>DAFTAR SISWA</h4>
+      <h4>Daftar Guru</h4>
       <div class="card-header-action">
-        <form method="GET" action="{{ route('student.indexst') }}">
+        <form method="GET" action="{{ route('teacher.indextc') }}">
           <div class="input-group">
             <button type="button" id="print-selected-cards" class="btn btn-success mr-2" style="display: none;" disabled>
               <i class="fas fa-print"></i> Cetak Kartu Terpilih
@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class="card-body p-0">
-      <form id="print-cards-form" action="{{ route('student.print-cards') }}" method="POST">
+      <form id="print-cards-form" action="{{ route('teacher.print-cards-tc') }}" method="POST">
         @csrf
         <div class="table-responsive">
           <table class="table table-striped" id="sortable-table">
@@ -31,29 +31,25 @@
                 <th class="text-center">NO.</th>
                 <th class="text-center">NO. KARTU</th>
                 <th class="text-center">NISN</th>
-                <th class="text-center">NAMA SISWA</th>
-                <th class="text-center">KELAS</th>
+                <th class="text-center">NAMA Guru</th>
                 <th class="text-center">ALAMAT</th>
                 <th class="text-center">QR CODE</th>
               </tr>
             </thead>
             <tbody>
-              @foreach ($students as $student)
+              @foreach ($teachers as $teacher)
                 <tr>
                   <td class="text-center">
-                    <input type="checkbox" name="selected_students[]" value="{{ $student->id }}" class="student-checkbox">
+                    <input type="checkbox" name="selected_teachers[]" value="{{ $teacher->id }}" class="teacher-checkbox">
                   </td>
-                  <td class="text-center">{{ ($students->currentPage() - 1) * $students->perPage() + $loop->iteration }}</td>
-                  <td class="text-center">{{ $student->no_kartu }}</td>
-                  <td class="text-center">{{ $student->nisn }}</td>
-                  <td>{{ $student->name }}</td>
-                  <td class="text-center">
-                    {{ $student->classRoom->first()->name ?? 'Belum ada kelas' }}
-                  </td>
-                  <td>{{ $student->province }}</td>
+                  <td class="text-center">{{ ($teachers->currentPage() - 1) * $teachers->perPage() + $loop->iteration }}</td>
+                  <td class="text-center">{{ $teacher->no_kartu }}</td>
+                  <td class="text-center">{{ $teacher->nisn }}</td>
+                  <td>{{ $teacher->name }}</td>
+                  <td>{{ $teacher->province }}</td>
                   <td class="text-center">
                     <div style="width: 90px; height: 90px; display: inline-block;">
-                      {!! $student->qr_code !!}
+                      {!! $teacher->qr_code !!}
                     </div>
                   </td>
                 </tr>
@@ -63,27 +59,27 @@
         </div>
       </form>
     </div>
-    @if ($students->hasPages())
+    @if ($teachers->hasPages())
     <div class="card-footer text-center">
       <nav class="d-inline-block">
         <ul class="pagination mb-0">
           {{-- Previous Page Link --}}
-          <li class="page-item {{ $students->onFirstPage() ? 'disabled' : '' }}">
-            <a class="page-link" href="{{ $students->previousPageUrl() }}" tabindex="-1">
+          <li class="page-item {{ $teachers->onFirstPage() ? 'disabled' : '' }}">
+            <a class="page-link" href="{{ $teachers->previousPageUrl() }}" tabindex="-1">
               <i class="fas fa-chevron-left"></i>
             </a>
           </li>
   
           {{-- Pagination Elements --}}
-          @foreach ($students->getUrlRange(1, $students->lastPage()) as $page => $url)
-            <li class="page-item {{ $students->currentPage() == $page ? 'active' : '' }}">
+          @foreach ($teachers->getUrlRange(1, $teachers->lastPage()) as $page => $url)
+            <li class="page-item {{ $teachers->currentPage() == $page ? 'active' : '' }}">
               <a class="page-link" href="{{ $url }}">{{ $page }}</a>
             </li>
           @endforeach
   
           {{-- Next Page Link --}}
-          <li class="page-item {{ !$students->hasMorePages() ? 'disabled' : '' }}">
-            <a class="page-link" href="{{ $students->nextPageUrl() }}">
+          <li class="page-item {{ !$teachers->hasMorePages() ? 'disabled' : '' }}">
+            <a class="page-link" href="{{ $teachers->nextPageUrl() }}">
               <i class="fas fa-chevron-right"></i>
             </a>
           </li>
@@ -96,23 +92,23 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const selectAllCheckbox = document.getElementById('select-all-checkbox');
-      const studentCheckboxes = document.querySelectorAll('.student-checkbox');
+      const teacherCheckboxes = document.querySelectorAll('.teacher-checkbox');
       const printSelectedCardsBtn = document.getElementById('print-selected-cards');
       const printCardsForm = document.getElementById('print-cards-form');
 
       // Select/Deselect all checkboxes
       selectAllCheckbox.addEventListener('change', function() {
-          studentCheckboxes.forEach(checkbox => {
+          teacherCheckboxes.forEach(checkbox => {
               checkbox.checked = selectAllCheckbox.checked;
           });
           togglePrintButton();
       });
 
       // Handle individual checkbox changes
-      studentCheckboxes.forEach(checkbox => {
+      teacherCheckboxes.forEach(checkbox => {
           checkbox.addEventListener('change', function() {
               // Check if all checkboxes are checked
-              const allChecked = Array.from(studentCheckboxes).every(cb => cb.checked);
+              const allChecked = Array.from(teacherCheckboxes).every(cb => cb.checked);
               
               // Update 'select all' checkbox accordingly
               selectAllCheckbox.checked = allChecked;
@@ -123,7 +119,7 @@
 
       // Toggle print button visibility and state
       function togglePrintButton() {
-          const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
+          const selectedCheckboxes = document.querySelectorAll('.teacher-checkbox:checked');
           
           // Always show and enable button if any checkbox is checked
           if (selectedCheckboxes.length > 0) {
