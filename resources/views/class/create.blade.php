@@ -13,6 +13,17 @@
                     @csrf
 
                     <div class="form-group">
+                        <label>Program Studi</label>
+                        <select name="prodi" class="form-control" required>
+                            <option value="">--Pilih Program Studi--</option>
+                            <option value="Akuntansi">Akuntansi</option>
+                            <option value="Teknik Komputer dan Jaringan">Teknik Komputer dan Jaringan</option>
+                            <option value="Design Komunikasi Visual">Design Komunikasi Visual</option>
+                            <option value="Asisten Keperawatan">Asisten Keperawatan</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label>Nama Kelas</label>
                         <input type="text" class="form-control @error('name') is-invalid @enderror" name="name"
                             placeholder="Masukkan Mata pelajaran" autofocus>

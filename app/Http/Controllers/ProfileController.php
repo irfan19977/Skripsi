@@ -3,65 +3,83 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function show(Request $request): View
-    {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
-    }
     
-    public function edit(Request $request): View
+    public function edit()
     {
-        return view('profile.show', [
-            'user' => $request->user(),
-        ]);
-    }
+        $user = Auth::user();
+        $provinces = Http::get('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')->json();
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Ambil data kabupaten jika user sudah memiliki province
+        $regencies = [];
+        if ($user->province) {
+            $regencies = Http::get("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/{$user->province}.json")->json();
         }
 
-        $request->user()->save();
+        // Ambil data kecamatan jika user sudah memiliki regency
+        $districts = [];
+        if ($user->city) {
+            $districts = Http::get("https://www.emsifa.com/api-wilayah-indonesia/api/districts/{$user->city}.json")->json();
+        }
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        // Ambil data desa jika user sudah memiliki district
+        $villages = [];
+        if ($user->district) {
+            $villages = Http::get("https://www.emsifa.com/api-wilayah-indonesia/api/villages/{$user->district}.json")->json();
+        } 
+
+        return view('profile.index', compact('user', 'provinces', 'regencies', 'districts', 'villages'));
     }
 
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
+
+    // Proses update profil
+    public function update(Request $request, $id)
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
+        // Temukan pengguna berdasarkan ID
+        $user = User::findOrFail($id); 
+
+        // Validasi data input
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'no_wa' => 'nullable|string|max:15',
+            'province' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'district' => 'nullable|string|max:255',
+            'village' => 'nullable|string|max:255',
+            'alamat' => 'nullable|string|max:255',
         ]);
 
-        $user = $request->user();
+        // Update data pengguna
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
+        $user->no_wa = $request->input('no_wa');
+        // $user->bio = $request->input('bio');
+        $user->province = $request->input('province');
+        $user->city = $request->input('city');
+        $user->district = $request->input('district');
+        $user->village = $request->input('village');
+        $user->alamat = $request->input('alamat');
 
-        Auth::logout();
+        // Simpan perubahan ke database
+        $user->save();
 
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return redirect()->route('profile.edit')
+            ->with('success', 'Profil berhasil diperbarui');
     }
 }

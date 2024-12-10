@@ -7,7 +7,7 @@
       <div class="card-header-action">
         <form method="GET" action="{{ route('student.indexst') }}">
           <div class="input-group">
-            <button type="button" id="print-selected-cards" class="btn btn-success mr-2" style="display: none;" disabled>
+            <button type="button" id="print-selected-cards" class="btn btn-primary mr-2" style="display: none;" disabled>
               <i class="fas fa-print"></i> Cetak Kartu Terpilih
             </button>
             <input type="text" class="form-control" placeholder="Search" name="q">
@@ -50,8 +50,19 @@
                   <td class="text-center">
                     {{ $student->classRoom->first()->name ?? 'Belum ada kelas' }}
                   </td>
-                  <td>{{ $student->province }}</td>
-                  <td class="text-center">
+                  <td>
+                    @php
+                        $city = ucwords(strtolower($student->city_name ?? '-'));
+                        $district = ucwords(strtolower($student->district_name ?? '-'));
+                        $village = ucwords(strtolower($student->village_name ?? '-'));
+                    @endphp
+                    @if ($city !== '-' && $district !== '-' && $village !== '-')
+                        {{ "$city, Kec. $district, Dsn. $village" }}
+                    @else
+                        Belum ada alamat
+                    @endif
+                </td>  
+              <td class="text-center">
                     <div style="width: 90px; height: 90px; display: inline-block;">
                       {!! $student->qr_code !!}
                     </div>

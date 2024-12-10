@@ -7,7 +7,7 @@
       <div class="card-header-action">
         <form method="GET" action="{{ route('teacher.indextc') }}">
           <div class="input-group">
-            <button type="button" id="print-selected-cards" class="btn btn-success mr-2" style="display: none;" disabled>
+            <button type="button" id="print-selected-cards" class="btn btn-primary mr-2" style="display: none;" disabled>
               <i class="fas fa-print"></i> Cetak Kartu Terpilih
             </button>
             <input type="text" class="form-control" placeholder="Search" name="q">

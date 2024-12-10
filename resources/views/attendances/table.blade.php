@@ -3,13 +3,16 @@
         <thead>
             <tr>
                 <th class="text-center">No.</th>
-                <th>Student</th>
-                <th>Subject</th>
+                <th>NAMA SISWA</th>
+                <th>PELAJARAN</th>
+                <th>PENGAJAR</th>
                 <th>Date</th>
                 <th>Time</th>
                 <th>Status</th>
                 <th>Notes</th>
-                <th>Actions</th>
+                @can('attendances.edit')
+                    <th>Actions</th>
+                @endcan
             </tr>
         </thead>
         <tbody>
@@ -20,6 +23,7 @@
                     </td>
                     <td>{{ $attendance->student->name }}</td>
                     <td>{{ $attendance->subject->name }}</td>
+                    <td>{{ $attendance->teacher->name }}</td>
                     <td>{{ $attendance->date }}</td>
                     <td>{{ $attendance->time }}</td>
                     <td>
@@ -34,29 +38,31 @@
                         @endif
                     </td>
                     <td>{{ $attendance->notes ?? '-' }}</td>
-                    <td>
-                        <a href="{{ route('attendances.edit', $attendance) }}" 
-                            class="btn btn-primary btn-action mr-1" 
-                            data-toggle="tooltip" 
-                            title="Edit">
-                            <i class="fas fa-pencil-alt"></i>
-                        </a>
+                    @can('attendances.edit')
+                        <td>
+                            <a href="{{ route('attendances.edit', $attendance) }}" 
+                                class="btn btn-primary btn-action mr-1" 
+                                data-toggle="tooltip" 
+                                title="Edit">
+                                <i class="fas fa-pencil-alt"></i>
+                            </a>
 
-                        <form id="delete-form-{{ $attendance->id }}" 
-                              action="{{ route('attendances.destroy', $attendance) }}" 
-                              method="POST" 
-                              style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" 
-                                    class="btn btn-danger btn-action" 
-                                    data-toggle="tooltip" 
-                                    title="Delete" 
-                                    onclick="confirmDelete('{{ $attendance->id }}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
-                    </td>
+                            <form id="delete-form-{{ $attendance->id }}" 
+                                action="{{ route('attendances.destroy', $attendance) }}" 
+                                method="POST" 
+                                style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" 
+                                        class="btn btn-danger btn-action" 
+                                        data-toggle="tooltip" 
+                                        title="Delete" 
+                                        onclick="confirmDelete('{{ $attendance->id }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    @endcan
                 </tr>
             @empty
                 <tr>

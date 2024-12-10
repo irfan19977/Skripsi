@@ -57,8 +57,8 @@ Route::group(['middleware' => 'auth'], function() {
     // Attendances
     Route::resource('/attendances', AttendancesController::class);
     Route::get('/students/find-by-nisn/{nisn}', [AttendancesController::class, 'findByNisn']);
-    Route::post('/attendances/qr-scan', [AttendancesController::class, 'processScan'])
-    ->name('attendances.qr-scan');
+    Route::post('/attendances/scan-qr', [AttendancesController::class, 'scanQrAttendance'])
+    ->name('attendances.scan-qr');
 
 
     //  Permission
@@ -71,10 +71,8 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('/users', UserController::class);
     Route::post('/rfid-detect', [UserController::class, 'handleRFIDDetection'])->name('rfid.detect');
 
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/{id}', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 

@@ -47,6 +47,7 @@ class ClassController extends Controller
         ]);
 
         $classes = ClassRoom::create([
+            'prodi' => $request->input('prodi'),
             'name' => $request->input('name'),
             'slug' => Str::slug($request->input('name')),
             'grade' => $request->input('grade'),

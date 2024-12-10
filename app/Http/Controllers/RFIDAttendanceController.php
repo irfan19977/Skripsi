@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\Attendances;
 use App\Models\Schedule;
 use App\Models\User;
 use Carbon\Carbon;
@@ -42,7 +43,7 @@ class RFIDAttendanceController extends Controller
         }
 
         // Cek apakah sudah absen
-        $existingAttendance = Attendance::where('student_id', $student->id)
+        $existingAttendance = Attendances::where('student_id', $student->id)
             ->where('subject_id', $schedule->subject_id)
             ->where('date', $currentTime->toDateString())
             ->first();
@@ -55,7 +56,7 @@ class RFIDAttendanceController extends Controller
         }
 
         // Buat record absensi
-        $attendance = Attendance::create([
+        $attendance = Attendances::create([
             'student_id' => $student->id,
             'subject_id' => $schedule->subject_id,
             'teacher_id' => $schedule->teacher_id,

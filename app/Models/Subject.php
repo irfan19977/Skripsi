@@ -11,4 +11,9 @@ class Subject extends Model
 
     protected $table = 'subjects';
     protected $guarded= [];
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
 }

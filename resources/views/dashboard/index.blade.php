@@ -11,8 +11,7 @@
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                                 <div class="card-content">
                                     <h5 class="font-15"> Siswa</h5>
-                                    <h2 class="mb-3 font-18">258</h2>
-                                    <p class="mb-0"><span class="col-green">10%</span> Increase</p>
+                                    <h2 class="mb-3 font-18">{{ App\Models\User::role('student')->count() ?? '0' }}</h2>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
@@ -32,9 +31,8 @@
                         <div class="row ">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                                 <div class="card-content">
-                                    <h5 class="font-15"> Guru</h5>
-                                    <h2 class="mb-3 font-18">1,287</h2>
-                                    <p class="mb-0"><span class="col-orange">09%</span> Decrease</p>
+                                    <h5 class="font-15"> Pengajar</h5>
+                                    <h2 class="mb-3 font-18">{{ App\Models\User::role('teacher')->count() ?? '0' }}</h2>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
@@ -55,9 +53,7 @@
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                                 <div class="card-content">
                                     <h5 class="font-15">Mata Pelajaran</h5>
-                                    <h2 class="mb-3 font-18">128</h2>
-                                    <p class="mb-0"><span class="col-green">18%</span>
-                                        Increase</p>
+                                    <h2 class="mb-3 font-18">{{ App\Models\subject::count() ?? '0' }}</h2>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
@@ -77,9 +73,8 @@
                         <div class="row ">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                                 <div class="card-content">
-                                    <h5 class="font-15">Revenue</h5>
-                                    <h2 class="mb-3 font-18">$48,697</h2>
-                                    <p class="mb-0"><span class="col-green">42%</span> Increase</p>
+                                    <h5 class="font-15">Kelas</h5>
+                                    <h2 class="mb-3 font-18">{{ App\Models\ClassRoom::count() ?? '0' }}</h2>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
@@ -230,14 +225,13 @@
                   <div class="row ">
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                           <div class="card-content">
-                              <h5 class="font-15"> Mata Pelajaran</h5>
-                              <h2 class="mb-3 font-18">258</h2>
-                              <p class="mb-0"><span class="col-green">10%</span> Increase</p>
+                              <h5 class="font-15"> Mapel</h5>
+                              <h2 class="mb-3 font-18">{{ App\Models\Subject::whereHas('schedules.classRoom')->count() ?? '0' }} </h2>
                           </div>
                       </div>
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
                           <div class="banner-img">
-                              <img src="assets/img/banner/1.png" alt="">
+                              <img src="{{ asset('backend/assets/img/banner/1.png') }}" alt="">
                           </div>
                       </div>
                   </div>
@@ -254,12 +248,11 @@
                           <div class="card-content">
                               <h5 class="font-15"> Terlambat</h5>
                               <h2 class="mb-3 font-18">1,287</h2>
-                              <p class="mb-0"><span class="col-orange">09%</span> Decrease</p>
                           </div>
                       </div>
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
                           <div class="banner-img">
-                              <img src="assets/img/banner/2.png" alt="">
+                              <img src="{{ asset('backend/assets/img/banner/2.png') }}" alt="">
                           </div>
                       </div>
                   </div>
@@ -275,14 +268,12 @@
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                           <div class="card-content">
                               <h5 class="font-15">Izin</h5>
-                              <h2 class="mb-3 font-18">128</h2>
-                              <p class="mb-0"><span class="col-green">18%</span>
-                                  Increase</p>
+                              <h2 class="mb-3 font-18">{{ App\Models\Attendances::where('student_id', Auth::id())->where('status', 'izin')->count() ?? '0' }}</h2>
                           </div>
                       </div>
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
                           <div class="banner-img">
-                              <img src="assets/img/banner/3.png" alt="">
+                              <img src="{{ asset('backend/assets/img/banner/3.png') }}" alt="">
                           </div>
                       </div>
                   </div>
@@ -298,13 +289,12 @@
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                           <div class="card-content">
                               <h5 class="font-15">Aplha</h5>
-                              <h2 class="mb-3 font-18">$48,697</h2>
-                              <p class="mb-0"><span class="col-green">42%</span> Increase</p>
+                              <h2 class="mb-3 font-18">{{ App\Models\Attendances::where('student_id', Auth::id())->where('status', 'alpha')->count() ?? '0' }}</h2>
                           </div>
                       </div>
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
                           <div class="banner-img">
-                              <img src="assets/img/banner/4.png" alt="">
+                              <img src="{{ asset('backend/assets/img/banner/4.png') }}" alt="">
                           </div>
                       </div>
                   </div>

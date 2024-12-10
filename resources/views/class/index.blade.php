@@ -25,6 +25,7 @@
           <thead>
             <tr>
               <th class="text-center">No.</th>
+              <th>Program Studi</th>
               <th>Nama</th>
               <th>Grade</th>
               @can('class.edit')
@@ -36,6 +37,7 @@
             @foreach ($classes as $class)
               <tr>
                 <td class="text-center">{{ ($classes->currentPage() - 1) * $classes->perPage() + $loop->iteration }}</td>
+                <td>{{ $class->prodi }}</td>
                 <td>{{ $class->name }}</td>
                 <td>{{ $class->grade }}</td>
                 @can('class.edit')

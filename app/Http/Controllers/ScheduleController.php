@@ -15,6 +15,7 @@ class ScheduleController extends Controller
      */
     public function index()
     {
+        $this->authorize('schedules.index');
         // Ambil semua jadwal pelajaran dengan relasi subject, teacher, dan class room
         $schedules = Schedule::with(['subject', 'teacher', 'classRoom'])
         ->orderByRaw("FIELD(day, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
@@ -31,6 +32,7 @@ class ScheduleController extends Controller
      */
     public function create()
     {
+        $this->authorize('schedules.create');
         $subjects = Subject::all(); // Mengambil semua mata pelajaran
         $teachers = User::role('teacher')->get(); // Mengambil semua guru
         $classRooms = ClassRoom::all(); // Mengambil semua kelas
@@ -83,6 +85,7 @@ class ScheduleController extends Controller
      */
     public function edit(string $id)
     {
+        $this->authorize('schedules.edit');
         $schedule = Schedule::findOrFail($id);
         $subjects = Subject::all();
         $teachers = User::role('teacher')->get();

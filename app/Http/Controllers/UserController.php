@@ -70,7 +70,7 @@ class UserController extends Controller
         //assign role
         $user->assignRole($request->input('role'));
         // Generate QR Code
-        $qrCodeContent = "Nama: {$user->name}, NISN: {$user->nisn}, Email: {$user->email}";
+        $qrCodeContent = "NISN: {$user->nisn}, NAMA: {$user->name}, EMAIL: {$user->email}";
         $qrCodeImage = QrCode::size(80)
             ->generate($qrCodeContent);
 

@@ -20,6 +20,7 @@ class AttendancesController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('attendances.index');
         // Get all attendances with relationships
         $attendances = Attendances::with(['student', 'teacher', 'subject'])
             ->when($request->filled('subject_id'), function ($query) use ($request) {
@@ -50,6 +51,7 @@ class AttendancesController extends Controller
      */
     public function create()
     {
+        $this->authorize('attendances.create');
         // Get students, subjects, and statuses
         $students = User::role('student')->get();
         $teachers = User::role('teacher')->get();
@@ -151,6 +153,61 @@ class AttendancesController extends Controller
         ]);
     }
 
+    public function scanQRAttendance(Request $request)
+    {
+        try {
+            // Validate the incoming request
+            $validatedData = $request->validate([
+                'nisn' => 'required|string'
+            ]);
+
+            // Use the existing findByNisn method to get student details and validate attendance
+            $response = $this->findByNisn($validatedData['nisn']);
+
+            // Check if the response is successful (200 status code)
+            if ($response->getStatusCode() === 200) {
+                $studentData = json_decode($response->getContent(), true);
+
+                // Prepare attendance data
+                $attendanceData = [
+                    'student_id' => $studentData['id'],
+                    'subject_id' => $studentData['subject_id'],
+                    'teacher_id' => $studentData['teacher_id'],
+                    'date' => now('Asia/Jakarta')->format('Y-m-d'),
+                    'time' => now('Asia/Jakarta')->format('H:i'),
+                    'status' => 'hadir', // Default status is 'hadir' (present)
+                ];
+
+                // Create attendance record
+                $attendance = Attendances::create($attendanceData);
+
+                // Return success response
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Absensi berhasil dicatat.',
+                    'student' => [
+                        'name' => $studentData['name'],
+                        'class' => $studentData['class_name'],
+                        'subject' => $studentData['subject_name'],
+                        'teacher' => $studentData['teacher_name'],
+                    ]
+                ]);
+            }
+
+            // If findByNisn returns an error response, return that response
+            return $response;
+
+        } catch (\Exception $e) {
+            // Log the error
+            Log::error('QR Attendance Scan Error: ' . $e->getMessage());
+
+            // Return error response
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal melakukan absensi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     /**
      * Store a newly created attendance in storage.
@@ -211,6 +268,7 @@ class AttendancesController extends Controller
      */
     public function edit(string $id)
     {
+        $this->authorize('attendances.edit');
         $attendances = Attendances::findOrFail($id);
          // Get students, subjects, and statuses
          $students = User::role('student')->get();

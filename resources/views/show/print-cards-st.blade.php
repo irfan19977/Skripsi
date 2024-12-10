@@ -7,7 +7,6 @@
         @page {
             size: A4;
             margin: 20mm;
-            /* Tambahkan opsi cetak warna */
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
@@ -31,8 +30,8 @@
         }
 
         .card-container {
-            width: 325px;
-            height: 205px;
+            width: 340px;
+            height: 227px;
             position: relative;
             border: 1px solid #ddd;
             border-radius: 10px;
@@ -40,28 +39,31 @@
             page-break-inside: avoid;
             display: flex;
             flex-direction: row;
-            gap: 10px; /* Tambahkan jarak antara kartu depan dan belakang */
+            gap: 10px;
         }
 
         .card-front, .card-back {
-            width: 325px; /* Pastikan ukuran sama */
-            height: 205px; /* Pastikan ukuran sama */
+            width: 340px;
+            height: 227px;
             border-radius: 10px;
             overflow: hidden;
-            flex-shrink: 0; /* Mencegah perubahan ukuran */
+            flex-shrink: 0;
         }
 
         .card-front {
-            background: linear-gradient(135deg, #3498db, #2ecc71);
+            background: linear-gradient(135deg, #1E90FF, #4CAF50);
             color: white;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
 
         .front-header {
             display: flex;
             align-items: center;
             margin-bottom: 10px;
+            background-color: rgba(0,0,0,0.2);
+            padding: 5px;
         }
 
         .school-logo-container {
@@ -76,6 +78,7 @@
             height: 40px;
             border-radius: 50%;
             overflow: hidden;
+            /* border: 2px solid white; */
         }
 
         .school-logo img {
@@ -84,9 +87,26 @@
             object-fit: cover;
         }
 
+        .school-name-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
         .school-name {
             font-size: 16px;
             font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            margin-bottom: 3px;
+            margin-top: 3px;
+        }
+
+        .school-address {
+            font-size: 8px;
+            opacity: 0.8;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
 
         .student-photo {
@@ -95,6 +115,8 @@
             border-radius: 5px;
             align-self: center;
             overflow: hidden;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .student-photo img {
@@ -105,20 +127,24 @@
 
         .student-info {
             text-align: center;
+            margin-top: 2px;
         }
 
         .student-name {
             font-size: 14px;
             font-weight: bold;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
         .student-details {
             font-size: 10px;
+            opacity: 0.9;
+            margin-top: 5px;
         }
 
         .card-back {
-            background: linear-gradient(135deg, #34495e, #2c3e50);
+            background: linear-gradient(135deg, #2C3E50, #34495E);
             color: white;
             display: flex;
             flex-direction: column;
@@ -126,14 +152,16 @@
             justify-content: center;
             text-align: center;
             font-size: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
 
         .qr-code-back {
             width: 80px;
             height: 80px;
-            border-radius: 5px;
             overflow: hidden;
             margin: 5px 0;
+            border: 2px solid white;
+            border-radius: 5px;
         }
 
         .terms-section {
@@ -142,11 +170,13 @@
             font-size: 6px;
             line-height: 1.2;
             padding: 0 10px;
+            opacity: 0.8;
         }
 
         .contact-info {
             font-size: 8px;
             margin-top: 5px;
+            opacity: 0.9;
         }
 
         @media print {
@@ -166,15 +196,14 @@
                 margin-bottom: 20px;
             }
 
-            /* Tambahkan pengaturan cetak warna */
             .card-front {
-                background: linear-gradient(135deg, #3498db, #2ecc71) !important;
+                background: linear-gradient(135deg, #1E90FF, #4CAF50) !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
 
             .card-back {
-                background: linear-gradient(135deg, #34495e, #2c3e50) !important;
+                background: linear-gradient(135deg, #2C3E50, #34495E) !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -192,7 +221,12 @@
                             <div class="school-logo">
                                 <img src="{{ asset('logo.png') }}" alt="Logo Sekolah">
                             </div>
-                            <div class="school-name">SMK WIYATA MANDALA</div>
+                            <div class="school-name-container">
+                                <div class="school-name">SMK WIYATA MANDALA</div>
+                                <div class="school-address">
+                                    Jl. Pare Kandangan No.10, Kemirahan, Damarwulan, Kec. Kepung <br>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="student-photo">
@@ -201,8 +235,8 @@
                     <div class="student-info">
                         <div class="student-name">{{ $student->name }}</div>
                         <div class="student-details">
-                            NISN: 1234567890<br>
-                            Kelas: XII IPA 1
+                            NISN: {{ $student->nisn }}<br>
+                            PRODI: {{ strtoupper($student->classRoom->first()->prodi ?? 'Belum ada Jueusan') }}
                         </div>
                     </div>
                 </div>

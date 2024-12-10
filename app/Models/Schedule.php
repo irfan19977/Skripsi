@@ -40,4 +40,9 @@ class Schedule extends Model
         $end = \Carbon\Carbon::parse($this->end_time);
         return $start->diffInMinutes($end);
     }
+
+    public function studentClasses()
+    {
+        return $this->hasMany(StudentClass::class, 'student_id');
+    }
 }

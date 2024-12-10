@@ -58,8 +58,6 @@
                         @endforeach
                     </div>
                         
-                        
-                    
                     <div class="card-footer text-right">
                         <button class="btn btn-primary mr-1" type="submit">Simpan</button>
                         <a href="{{ route('schedules.index') }}" class="btn btn-secondary">Batal</a>
