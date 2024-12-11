@@ -84,40 +84,95 @@
   @hasanyrole('student')
     <div class="row sortable-card">
       @foreach($schedules as $schedule)
-        <div class="col-12 col-md-6 col-lg-3">
-            <div class="card card-primary">
-                <div class="card-header">
-                    <h4>{{ $schedule->day }}</h4>
-                </div>
-                <div class="card-body">
-                    <a href="{{ route('subjects.show', $schedule->subject->id) }}" class="text-decoration-none">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="font-weight-bold text-primary">
-                                {{ $schedule->subject->name }}
-                            </span>
-                            <i class="fas fa-chevron-right text-muted"></i>
-                        </div>
-                        <small class="text-muted d-block mt-1">
-                            {{ $schedule->start_time }} - {{ $schedule->end_time }}
-                        </small>
-                        <small class="text-muted d-block">
-                            Pengajar: {{ $schedule->teacher->name }}
-                        </small>
-                    </a>
-                </div>
+        @php
+          // Tentukan warna berdasarkan hari
+          $dayColor = match($schedule->day) {
+              'Senin' => 'card-primary',     // Biru
+              'Selasa' => 'card-success',    // Hijau
+              'Rabu' => 'card-warning',      // Kuning
+              'Kamis' => 'card-danger',      // Merah
+              'Jumat' => 'card-info',        // Biru Muda
+              'Sabtu' => 'card-dark',        // Hitam
+              default => 'card-secondary'    // Abu-abu (default)
+          };
+      @endphp
+        <a href="{{ route('schedules.attendance', $schedule->id) }}">
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="card {{ $dayColor }}">
+              <div class="card-header">
+                <h4>{{ $schedule->day }}</h4>
+              </div>
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="font-weight-bold">
+                      {{ $schedule->subject->name }}
+                  </span>
+              </div>
+              <small class="text-muted d-block mt-1">
+                  Waktu: {{ $schedule->start_time }} - {{ $schedule->end_time }}
+              </small>
+              <small class="text-muted d-block">
+                  Kelas: {{ $schedule->classRoom->name }}
+              </small>
+              <small class="text-muted d-block">
+                  Pengajar: {{ $schedule->teacher->name }}
+              </small>
+              </div>
             </div>
+          </a>
+        </div>
+      @endforeach
+    </div>
+  @endhasanyrole
+  
+  @hasanyrole('teacher')
+    <div class="row sortable-card">
+      @foreach($schedules as $schedule)
+        @php
+          // Tentukan warna berdasarkan hari
+          $dayColor = match($schedule->day) {
+              'Senin' => 'card-primary',     // Biru
+              'Selasa' => 'card-success',    // Hijau
+              'Rabu' => 'card-warning',      // Kuning
+              'Kamis' => 'card-danger',      // Merah
+              'Jumat' => 'card-info',        // Biru Muda
+              'Sabtu' => 'card-dark',        // Hitam
+              default => 'card-secondary'    // Abu-abu (default)
+          };
+      @endphp
+        <a href="{{ route('schedules.attendance', $schedule->id) }}">
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="card {{ $dayColor }}">
+              <div class="card-header">
+                <h4>{{ $schedule->day }}</h4>
+              </div>
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="font-weight-bold">
+                      {{ $schedule->subject->name }}
+                  </span>
+              </div>
+              <small class="text-muted d-block mt-1">
+                  Waktu: {{ $schedule->start_time }} - {{ $schedule->end_time }}
+              </small>
+              <small class="text-muted d-block">
+                  Kelas: {{ $schedule->classRoom->name }}
+              </small>
+              <small class="text-muted d-block">
+                  Pengajar: {{ $schedule->teacher->name }}
+              </small>
+              </div>
+            </div>
+          </a>
         </div>
       @endforeach
     </div>
   @endhasanyrole
 
+
   
-  @push('styles')
-    <link rel="stylesheet" href="{{ asset('backend/assets/bundles/chocolat/dist/css/chocolat.css') }}">
-  @endpush
   @push('script')    
-    <script src="{{ asset('backend/assets/bundles/chocolat/dist/js/jquery.chocolat.min.js') }}"></script>
-    <script src="{{ asset('backend/assets/bundles/jquery-ui/jquery-ui.min.js') }}"></script>
+  
     <script>
       function confirmDelete(id) {
         swal({

@@ -53,12 +53,14 @@ Route::group(['middleware' => 'auth'], function() {
     
     // Schedules
     Route::resource('/schedules', ScheduleController::class);
+    Route::get('/schedules/{schedule}/attendance', [ScheduleController::class, 'showAttendance'])->name('schedules.attendance');
     
     // Attendances
     Route::resource('/attendances', AttendancesController::class);
     Route::get('/students/find-by-nisn/{nisn}', [AttendancesController::class, 'findByNisn']);
     Route::post('/attendances/scan-qr', [AttendancesController::class, 'scanQrAttendance'])
     ->name('attendances.scan-qr');
+    
 
 
     //  Permission

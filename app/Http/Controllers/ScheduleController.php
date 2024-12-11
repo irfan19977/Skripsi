@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendances;
 use App\Models\ClassRoom;
 use App\Models\Schedule;
 use App\Models\Subject;
@@ -16,12 +17,41 @@ class ScheduleController extends Controller
     public function index()
     {
         $this->authorize('schedules.index');
-        // Ambil semua jadwal pelajaran dengan relasi subject, teacher, dan class room
-        $schedules = Schedule::with(['subject', 'teacher', 'classRoom'])
-        ->orderByRaw("FIELD(day, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
-        ->orderBy('start_time')
-        ->paginate(10);
 
+        $user = auth()->user();
+        $userRoles = $user->roles->pluck('name');
+
+        if ($userRoles->contains('admin')) {
+            // Jika pengguna adalah admin, ambil semua jadwal
+            $schedules = Schedule::with(['subject', 'teacher', 'classRoom'])
+                ->orderByRaw("FIELD(day, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
+                ->orderBy('start_time')
+                ->paginate(10);
+        } elseif ($userRoles->contains('student')) {
+            // Jika pengguna adalah siswa, ambil jadwal berdasarkan kelasnya
+            $studentClasses = $user->studentClasses; // Ambil semua kelas siswa
+            if ($studentClasses->isNotEmpty()) {
+                $classRoomIds = $studentClasses->pluck('class_room_id'); // Ambil ID kelas
+                $schedules = Schedule::with(['subject', 'teacher', 'classRoom'])
+                    ->whereIn('class_room_id', $classRoomIds)
+                    ->orderByRaw("FIELD(day, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
+                    ->orderBy('start_time')
+                    ->paginate(10);
+            } else {
+                // Jika tidak ada kelas, kembalikan koleksi kosong
+                $schedules = collect();
+            }
+        } elseif ($userRoles->contains('teacher')) {
+            // Jika pengguna adalah guru, ambil jadwal mengajar berdasarkan ID guru
+            $schedules = Schedule::with(['subject', 'classRoom'])
+                ->where('teacher_id', $user->id) // Ambil jadwal berdasarkan ID guru
+                ->orderByRaw("FIELD(day, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
+                ->orderBy('start_time')
+                ->paginate(10);
+        } else {
+            // Jika bukan admin, siswa, atau guru, kembalikan koleksi kosong
+            $schedules = collect();
+        }
 
         return view('schedules.index', compact('schedules'));
     }
@@ -136,5 +166,29 @@ class ScheduleController extends Controller
         } else {
             return response()->json(['success' => false, 'massage' => 'Data Gagal Dihapus']);
         }
+    }
+
+    public function showAttendance(string $scheduleId)
+    {
+        $user = auth()->user();
+        $userRoles = $user->roles->pluck('name');
+        $schedule = Schedule::findOrFail($scheduleId);
+
+        if ($userRoles->contains('student')) {
+            // For students, show only their own attendance
+            $attendances = Attendances::where('student_id', $user->id)
+                ->where('subject_id', $schedule->subject_id)
+                ->where('teacher_id', $schedule->teacher_id)
+                ->get();
+        } else{
+
+            // Get all attendances for this schedule's subject and class
+            $attendances = Attendances::where('subject_id', $schedule->subject_id)
+                ->where('teacher_id', $schedule->teacher_id)
+                ->with('student')
+                ->get();
+        }
+
+        return view('schedules.attendance', compact('schedule', 'attendances'));
     }
 }
