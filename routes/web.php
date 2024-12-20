@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LessonScheduleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RFIDController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ShowUserController;
@@ -71,11 +72,14 @@ Route::group(['middleware' => 'auth'], function() {
 
     // User
     Route::resource('/users', UserController::class);
-    Route::post('/rfid-detect', [UserController::class, 'handleRFIDDetection'])->name('rfid.detect');
-
+    
+    
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/{id}', [ProfileController::class, 'update'])->name('profile.update');
 });
+Route::post('/rfid-detect', [RFIDController::class, 'detect'])->name('rfid.detect');
+Route::get('/get-latest-rfid', [RFIDController::class, 'getLatestRFID'])->name('get.latest.rfid');
+Route::post('/clear-rfid', [RFIDController::class, 'clearRFID'])->name('clear.rfid');
 
 
 require __DIR__.'/auth.php';

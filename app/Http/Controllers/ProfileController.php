@@ -63,6 +63,7 @@ class ProfileController extends Controller
             'district' => 'nullable|string|max:255',
             'village' => 'nullable|string|max:255',
             'alamat' => 'nullable|string|max:255',
+            'password' => 'nullable|min:8|confirmed',
         ]);
 
         // Update data pengguna
@@ -75,11 +76,15 @@ class ProfileController extends Controller
         $user->district = $request->input('district');
         $user->village = $request->input('village');
         $user->alamat = $request->input('alamat');
+        $user->password = bcrypt($request->password);
 
         // Simpan perubahan ke database
         $user->save();
 
-        return redirect()->route('profile.edit')
-            ->with('success', 'Profil berhasil diperbarui');
+       if ($user) {
+        return redirect()->route('profile.edit')->with('success', 'Data Berhasil Diperbarui');
+       } else{
+        return redirect()->route('profile.edit')->with('error', 'Data gagal diperbarui');
+       }
     }
 }

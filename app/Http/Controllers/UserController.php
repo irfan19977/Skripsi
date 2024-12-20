@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Spatie\Permission\Models\Role;
@@ -141,8 +142,8 @@ class UserController extends Controller
         }
 
         // Regenerasi QR Code jika data penting berubah
-        $qrCodeContent = "Nama: {$user->name}, NISN: {$user->nisn}, Email: {$user->email}";
-        $qrCodeImage = QrCode::size(50)->generate($qrCodeContent);
+        $qrCodeContent = "NISN: {$user->nisn}, NAMA: {$user->name}, EMAIL: {$user->email}";
+        $qrCodeImage = QrCode::size(80)->generate($qrCodeContent);
 
         // Update QR code pada user
         $user->qr_code = $qrCodeImage;
@@ -175,30 +176,32 @@ class UserController extends Controller
         }
     }
 
-    public function handleRFIDDetection(Request $request)
-    {
-        // Validasi input RFID
-        $validatedData = $request->validate([
-            'rfid_card' => 'required|string|max:50'
-        ]);
+    public function registerRfid(Request $request)
+{
+    $rfidCard = $request->input('rfid_card');
 
-        $rfidCard = $validatedData['rfid_card'];
-        
-        // Cek apakah kartu sudah terdaftar
-        $existingCard = User::where('no_kartu', $rfidCard)->first();
-        
-        if ($existingCard) {
-            return response()->json([
-                'status' => 'exists',
-                'message' => 'Kartu sudah terdaftar'
-            ], 400);
-        }
-        
-        // Kirim respon kartu baru untuk ditampilkan di modal
-        return response()->json([
-            'status' => 'new',
-            'rfid_card' => $rfidCard
+    // Simpan kartu RFID ke database
+    $user = User::where('no_kartu', $rfidCard)->first();
+    if (!$user) {
+        $user = User::create([
+            'no_kartu' => $rfidCard,
         ]);
     }
+
+    return response()->json(['message' => 'Kartu RFID berhasil disimpan']);
+}
+
+// app/Http/Controllers/UserController.php
+public function updateNoKartu(Request $request)
+{
+    $rfidCard = $request->input('rfid_card');
+
+    // Cari pengguna berdasarkan no_kartu
+    $user = User::where('no_kartu', $rfidCard)->first();
+
+    // Perbarui nilai input no_kartu di view
+    return response()->json(['no_kartu' => $user->no_kartu]);
+}
+
 
 }

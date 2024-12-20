@@ -8,6 +8,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
   <title>Otika - Admin Dashboard Template</title>
   <!-- General CSS Files -->
@@ -63,7 +64,7 @@
   <!-- Page Specific JS File -->
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script src="{{ asset('backend/assets/bundles/select2/dist/js/select2.full.min.js') }}"></script>
-  <script src="https://unpkg.com/instascan@latest/instascan.min.js"></script>
+  {{-- <script src="https://unpkg.com/instascan@latest/instascan.min.js"></script> --}}
   
   <script>
     @if (session('success'))

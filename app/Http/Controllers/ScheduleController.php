@@ -8,6 +8,7 @@ use App\Models\Schedule;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 
 class ScheduleController extends Controller
 {
@@ -168,27 +169,63 @@ class ScheduleController extends Controller
         }
     }
 
-    public function showAttendance(string $scheduleId)
-    {
-        $user = auth()->user();
-        $userRoles = $user->roles->pluck('name');
-        $schedule = Schedule::findOrFail($scheduleId);
+    public function generateAttendanceLink($scheduleId)
+{
+    // Membuat signed URL yang berlaku selama 24 jam
+    $signedUrl = URL::signedRoute('schedules.attendance', [
+        'schedule' => $scheduleId
+    ], now()->addDay());
 
-        if ($userRoles->contains('student')) {
-            // For students, show only their own attendance
-            $attendances = Attendances::where('student_id', $user->id)
-                ->where('subject_id', $schedule->subject_id)
-                ->where('teacher_id', $schedule->teacher_id)
-                ->get();
-        } else{
+    return $signedUrl;
+}
 
-            // Get all attendances for this schedule's subject and class
-            $attendances = Attendances::where('subject_id', $schedule->subject_id)
-                ->where('teacher_id', $schedule->teacher_id)
-                ->with('student')
-                ->get();
+public function showAttendance(string $scheduleId) {
+    $user = auth()->user();
+    $userRoles = $user->roles->pluck('name');
+    $schedule = Schedule::findOrFail($scheduleId);
+    $today = now()->format('Y-m-d'); // Mendapatkan tanggal hari ini
+
+    // Untuk role guru
+    if ($userRoles->contains('teacher')) {
+        // Pastikan hanya guru yang mengajar mata pelajaran ini yang bisa mengakses
+        if ($schedule->teacher_id !== $user->id) {
+            abort(404, 'Unauthorized access');
         }
+
+        // Ambil semua siswa di kelas yang sama dengan jadwal
+        $students = User::whereHas('studentClasses', function ($query) use ($schedule) {
+            $query->where('class_room_id', $schedule->class_room_id);
+        })
+        ->orderBy('name', 'desc') // Urutkan berdasarkan nama
+        ->get();
+
+        return view('schedules.attendance', [
+            'schedule' => $schedule, 
+            'students' => $students
+        ]);
+    }
+
+    // Logika untuk siswa
+    if ($userRoles->contains('student')) {
+        $studentClasses = $user->studentClasses->pluck('class_room_id');
+
+        if (!$studentClasses->contains($schedule->class_room_id)) {
+            abort(404, 'Unauthorized access');
+        }
+
+        // Ambil kehadiran siswa untuk hari ini
+        $attendances = Attendances::where('student_id', $user->id)
+            ->where('subject_id', $schedule->subject_id)
+            ->where('teacher_id', $schedule->teacher_id)
+            ->whereDate('date', now()->format('Y-m-d')) // Filter berdasarkan tanggal hari ini
+            ->orderBy('date', 'desc')
+            ->get();
 
         return view('schedules.attendance', compact('schedule', 'attendances'));
     }
+
+    // Jika bukan guru atau siswa
+    abort(403, 'Unauthorized');
+}
+
 }

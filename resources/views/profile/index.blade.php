@@ -228,7 +228,7 @@
                   @error('city')
                       <div class="invalid-feedback">{{ $message }}</div>
                   @enderror
-              </div>
+                </div>
                 <div class="form-group col-md-6 col-12">
                     <label>Desa</label>
                     <select name="village" id="village" class="form-control @error('village') is-invalid @enderror">
@@ -249,20 +249,33 @@
                   <div class="form-group col-12">
                     <label>Alamat</label>
                     <textarea
-                      class="form-control summernote-simple" name="alamat">{{ $user->alamat }}</textarea>
+                      class="form-control summernote-simple @error('alamat') is-invalid @enderror" name="alamat">{{ $user->alamat }}</textarea>
                   </div>
+                  @error('alamat')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="row">
-                  <div class="form-group mb-0 col-12">
-                    <div class="custom-control custom-checkbox">
-                      <input type="checkbox" name="remember" class="custom-control-input" id="newsletter">
-                      <label class="custom-control-label" for="newsletter">Subscribe to newsletter</label>
-                      <div class="text-muted form-text">
-                        You will get new information about products, offers and promotions
-                      </div>
-                    </div>
+                  <div class="form-group col-12">
+                    <label>Ganti Password</label>
+                    <input type="password"
+                      class="form-control @error('password') is-invalid @enderror" 
+                      name="password" 
+                      placeholder="Kosongkan jika tidak ingin mengganti">
+                    @error('password')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
+                  <div class="form-group col-12">
+                    <label>Konfirmasi Password</label>
+                    <input type="password"
+                      class="form-control" 
+                      name="password_confirmation" 
+                      placeholder="Konfirmasi password baru">
                   </div>
                 </div>
+                
+                
               </div>
               <div class="card-footer text-right">
                 <button class="btn btn-primary">Save Changes</button>

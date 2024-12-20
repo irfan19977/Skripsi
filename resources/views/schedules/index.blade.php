@@ -96,7 +96,7 @@
               default => 'card-secondary'    // Abu-abu (default)
           };
       @endphp
-        <a href="{{ route('schedules.attendance', $schedule->id) }}">
+        <a href="{{ URL::signedRoute('schedules.attendance', ['schedule' => $schedule->id]) }}">
           <div class="col-12 col-md-6 col-lg-3">
             <div class="card {{ $dayColor }}">
               <div class="card-header">
@@ -140,7 +140,7 @@
               default => 'card-secondary'    // Abu-abu (default)
           };
       @endphp
-        <a href="{{ route('schedules.attendance', $schedule->id) }}">
+        <a href="{{ URL::signedRoute('schedules.attendance', ['schedule' => $schedule->id]) }}">
           <div class="col-12 col-md-6 col-lg-3">
             <div class="card {{ $dayColor }}">
               <div class="card-header">
@@ -172,7 +172,6 @@
 
   
   @push('script')    
-  
     <script>
       function confirmDelete(id) {
         swal({
