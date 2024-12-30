@@ -107,6 +107,8 @@
     </div>
 </div>
 
+@endsection
+
 @push('script')
     <script>
         function confirmDelete(id) {
@@ -295,4 +297,3 @@
         });
     </script>
 @endpush
-@endsection

@@ -99,7 +99,7 @@
             <div class="form-group row mb-4">
                 <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3">Catatan</label>
                 <div class="col-sm-12 col-md-7">
-                    <select name="status" class="form-control selectric" required>
+                    <select name="notes" class="form-control selectric" required>
                         <option value="kartu hilang" {{ isset($attendance) && $attendance->status == 'kartu hilang' ? 'selected' : '' }}>Kartu Hilang</option>
                         <option value="kartu tertinggal" {{ isset($attendance) && $attendance->status == 'kartu tertinggal' ? 'selected' : '' }}>Kartu Tertinggal</option>
                     </select>

@@ -61,7 +61,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/students/find-by-nisn/{nisn}', [AttendancesController::class, 'findByNisn']);
     Route::post('/attendances/scan-qr', [AttendancesController::class, 'scanQrAttendance'])
     ->name('attendances.scan-qr');
-    
+    Route::get('/attendances/trigger-alpha-otomatis', [AttendancesController::class, 'triggerAlpaOtomatis']);
 
 
     //  Permission

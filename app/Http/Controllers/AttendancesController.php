@@ -46,9 +46,6 @@ class AttendancesController extends Controller
         return view('attendances.index', compact('attendances', 'subjects', 'statuses'));
     }
 
-    /**
-     * Show the form for creating a new attendance.
-     */
     public function create()
     {
         $this->authorize('attendances.create');
@@ -209,63 +206,47 @@ class AttendancesController extends Controller
         }
     }
 
-    /**
-     * Store a newly created attendance in storage.
-     */
     public function store(Request $request)
     {
-        try {
-            // Validate input
-            $validatedData = $request->validate([
-                'student_id' => 'required|exists:users,id',
-                'subject_id' => 'required|exists:subjects,id',
-                'teacher_id' => 'required|exists:users,id',
-                'date' => 'required|date',
-                'time' => 'required|date_format:H:i',
-                'status' => 'required|in:hadir,izin,sakit,alpha',
-                'notes' => 'nullable|string|max:500'
-            ]);
+    // Validate input
+    $validatedData = $request->validate([
+        'student_id' => 'required|exists:users,id',
+        'subject_id' => 'required|exists:subjects,id', 
+        'teacher_id' => 'required|exists:users,id',
+        'date' => 'required|date',
+        'time' => 'required|date_format:H:i',
+        'status' => 'required|in:hadir,izin,sakit,alpha',
+        'notes' => 'nullable|string|max:500'
+    ]);
 
-            // Check for existing attendance on the same day and subject
-            $attendanceExists = Attendances::where('student_id', $validatedData['student_id'])
-                ->where('subject_id', $validatedData['subject_id'])
-                ->where('date', $validatedData['date'])
-                ->exists();
+    // Check for existing attendance
+    $attendanceExists = Attendances::where('student_id', $validatedData['student_id'])
+        ->where('subject_id', $validatedData['subject_id'])
+        ->where('date', $validatedData['date'])
+        ->exists();
 
-            if ($attendanceExists) {
-                return redirect()->back()
-                    ->with('error', 'Siswa sudah melakukan absensi untuk mata pelajaran ini pada tanggal tersebut.')
-                    ->withInput();
-            }
+    if ($attendanceExists) {
+        return redirect()->back()
+            ->with('error', 'Siswa sudah melakukan absensi untuk mata pelajaran ini pada tanggal tersebut.')
+            ->withInput();
+    }
 
-            // Optionally, allow overriding teacher_id if needed
-            // Otherwise, use the current logged-in user's ID as a fallback
-            $validatedData['teacher_id'] = $validatedData['teacher_id'] ?? Auth::id();
+    // Set teacher_id if not provided
+    $validatedData['teacher_id'] = $validatedData['teacher_id'] ?? Auth::id();
 
-            // Create attendance record
-            $attendance = Attendances::create($validatedData);
+    // Create attendance record
+    $attendance = Attendances::create($validatedData);
 
-            return redirect()->route('attendances.index')
-                ->with('success', 'Absensi berhasil dicatat.');
+    if($attendance) {
+        return redirect()->route('attendances.index')
+            ->with('success', 'Absensi berhasil dicatat.');
+    }
 
-        } catch (ValidationException $e) {
-            // Redirect back with validation errors
-            return redirect()->back()
-                ->withErrors($e->validator)
-                ->withInput();
-        } catch (\Exception $e) {
-            // Log any unexpected errors
-            Log::error('Attendance creation error: ' . $e->getMessage());
-            
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat menyimpan absensi.')
-                ->withInput();
-        }
+    return redirect()->back()
+        ->with('error', 'Gagal menyimpan data absensi.')
+        ->withInput();
     }
     
-    /**
-     * Show the form for editing an attendance.
-     */
     public function edit(string $id)
     {
         $this->authorize('attendances.edit');
@@ -288,9 +269,6 @@ class AttendancesController extends Controller
          return view('attendances.edit', compact('attendances', 'students', 'teachers', 'subjects', 'statuses', 'currentDate', 'currentTime'));
     }
 
-    /**
-     * Update the specified attendance in storage.
-     */
     public function update(Request $request, Attendances $attendance)
     {
         // Validate the request
@@ -311,9 +289,6 @@ class AttendancesController extends Controller
             ->with('success', 'Attendance updated successfully.');
     }
 
-    /**
-     * Remove the specified attendance from storage.
-     */
     public function destroy(string $id)
     {
         $attendance = Attendances::findOrFail($id);
@@ -326,24 +301,5 @@ class AttendancesController extends Controller
         }
     }
 
-    /**
-     * Get subjects for a specific student
-     */
-    public function getStudentSubjects(Request $request)
-    {
-        $studentId = $request->input('student_id');
-        
-        // Assuming you have a relationship set up between students, their classes, 
-        // and the subjects taught in those classes
-        $student = User::findOrFail($studentId);
-        
-        // This is a sample query - you'll need to adjust based on your exact model relationships
-        $subjects = $student->class->subjects ?? [];
-        
-        return response()->json([
-            'subjects' => $subjects,
-        ]);
-    }
-
-    
+   
 }
